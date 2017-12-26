@@ -1,6 +1,7 @@
 import React from 'react';
 import Map from './map'
 import MapService from './../services/mapService';
+import fetch from 'node-fetch'
 
 class Game extends React.Component {
     constructor(props) {
@@ -31,17 +32,41 @@ class Game extends React.Component {
         }
     }
 
-
     componentWillMount() {
+        const ws = new WebSocket("ws://127.0.0.1:9000/ws");
+
+        ws.onmessage = (evt) => {
+
+            const msg = JSON.parse(evt.data);
+
+            switch (msg.action) {
+                case "rotate":
+                    this.rotateCar();
+                    break;
+                case "forward":
+                    this.moveCarForward();
+                    break;
+                default:
+                    break;
+            }
+
+            console.log(msg)
+        };
+
+        window.onbeforeunload = function(event) {
+            ws.close();
+        };
+
         document.addEventListener("keydown", (event) => {
             const KEY_R = 82;
             const KEY_UP = 38;
             switch( event.keyCode ) {
                 case KEY_R:
-                    this.rotateCar();
+                    fetch("http://127.0.0.1:9000/api/rotate");
+                    // this.rotateCar();
                     break;
                 case KEY_UP:
-                    this.moveCarForward();
+                    fetch("http://127.0.0.1:9000/api/forward");
                     break;
                 default:
                     //console.log(event.keyCode);
