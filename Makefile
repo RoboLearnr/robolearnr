@@ -7,6 +7,9 @@ build = docker run --rm -v $(PWD):/go/src/app -w /go/src/app/server golang:1.8 b
 tar = cd build && tar -cvzf $(1)_$(2).tar.gz $(appname)$(3) && rm $(appname)$(3)
 zip = cd build && zip $(1)_$(2).zip $(appname)$(3) && rm $(appname)$(3)
 
+default: build/web build/robolearn
+
+
 build_docker:
 	docker build . -t robolearn:${version}
 
@@ -19,9 +22,16 @@ dev_node:
 dev_go:
 	docker run -ti -v $$(pwd):/go/src/app:ro -p 9000:9000 -w /go/src/app/server golang bash -c "go get; go get github.com/tockins/realize; realize start"
 
-clean:
-	rm -rf build/web
+dev_sdk:
+	mkdir -p sdk
+	mkdir -p sdk/python
+	cd sdk/python; git clone git@github.com:NoUseFreak/python-robolearn.git . || git fetch
 
+clean:
+	rm -rf build/
+
+build/robolearn:
+	docker run --rm -v $(PWD):/go/src/app -w /go/src/app/server golang:1.8 bash -c "go get -u github.com/jteeuwen/go-bindata/...; go generate; go get; GOOS=darwin GOARCH=amd64 go build -o ../build/robolearn"
 
 all: darwin linux windows
 
@@ -29,6 +39,7 @@ all: darwin linux windows
 ##### Common FRONTEND #####
 build/web:
 	docker run --rm -v "$(PWD)/web:/app" -w /app node bash -c "npm install; npm run build"
+	mkdir -p build
 	mv web/build build/web
 
 ##### DARWIN (MAC) BUILDS #####
