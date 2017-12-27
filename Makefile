@@ -17,10 +17,12 @@ run:
 	docker run -p 8080:80 robolearn:${version}
 
 dev_node:
-	docker run -ti -v $(pwd):/app:ro -w /app/web -p 3000:3000 node bash -c "npm install; npm start"
+	cd web \
+		&& npm install \
+		&& npm start
 
 dev_go:
-	docker run -ti -v $$(pwd):/go/src/app:ro -p 9000:9000 -w /go/src/app/server golang bash -c "go get; go get github.com/tockins/realize; realize start"
+	docker run -ti -v $$(pwd):/go/src/app -p 9000:9000 -w /go/src/app/server golang bash -c "go get; go get -u github.com/jteeuwen/go-bindata/...; go generate; go get github.com/tockins/realize; realize start"
 
 dev_sdk:
 	mkdir -p sdk

@@ -7,9 +7,6 @@ class MapService {
         return fetch('http://localhost:9000/api/map')
             .then((res) => {
                 return res.json();
-            })
-            .catch((err) => {
-                console.log(err);
             });
     }
 }

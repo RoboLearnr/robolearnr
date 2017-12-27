@@ -2,55 +2,51 @@ import React from 'react';
 import Map from './map'
 import MapService from './../services/mapService';
 import fetch from 'node-fetch'
+import ReconnectingWebSocket from 'reconnectingwebsocket'
 
 class Game extends React.Component {
     constructor(props) {
         super(props);
 
         const mapService = new MapService();
-        mapService.fetch().then((apiResponse) => {
-            const grid = apiResponse.grid.map((row) => {
-                return row.map((cell) => {
-                    switch (cell) {
-                        case "e":
-                            return Game.cell("empty");
-                        case "w":
-                            return Game.cell("wall");
-                        case "c":
-                            return Game.cell("car");
-                        default:
-                            return Game.cell("empty");
-                    }
-                });
+        mapService.fetch()
+            .then((apiResponse) => {
+                this._setGrid(apiResponse)
+            })
+            .catch((err) => {
+                console.error("Could not fetch map.")
             });
-
-            this.setState({grid});
-        });
 
         this.state = {
             grid: [],
         }
     }
 
+    _setGrid(map) {
+        const grid = map.grid.map((row) => {
+            return row.map((cell) => {
+                switch (cell) {
+                    case "e":
+                        return Game.cell("empty");
+                    case "w":
+                        return Game.cell("wall");
+                    case "c":
+                        return Game.cell("car", {"rotation": map.car.rotation});
+                    default:
+                        return Game.cell("empty");
+                }
+            });
+        });
+
+        this.setState({grid});
+        // this.playSound("step");
+    }
+
     componentWillMount() {
-        const ws = new WebSocket("ws://127.0.0.1:9000/ws");
+        const ws = new ReconnectingWebSocket("ws://127.0.0.1:9000/ws");
 
         ws.onmessage = (evt) => {
-
-            const msg = JSON.parse(evt.data);
-
-            switch (msg.action) {
-                case "rotate":
-                    this.rotateCar();
-                    break;
-                case "forward":
-                    this.moveCarForward();
-                    break;
-                default:
-                    break;
-            }
-
-            console.log(msg)
+            this._handleRpc(JSON.parse(evt.data));
         };
 
         window.onbeforeunload = function(event) {
@@ -60,83 +56,37 @@ class Game extends React.Component {
         document.addEventListener("keydown", (event) => {
             const KEY_R = 82;
             const KEY_UP = 38;
+            const KEY_F = 70;
             switch( event.keyCode ) {
                 case KEY_R:
-                    fetch("http://127.0.0.1:9000/api/rotate");
-                    // this.rotateCar();
+                    fetch("http://127.0.0.1:9000/api/rotate")
+                        .catch((err) => {console.error('Backend down')});
                     break;
+                case KEY_F:
                 case KEY_UP:
-                    fetch("http://127.0.0.1:9000/api/forward");
+                    fetch("http://127.0.0.1:9000/api/forward")
+                        .catch((err) => {console.error('Backend down')});
                     break;
                 default:
-                    //console.log(event.keyCode);
                     break;
             }
         });
     }
 
-    rotateCar() {
-        const grid = this.state.grid.map((row) => {
-            return row.map((cell) => {
-                if (cell.type === "car") {
-                    cell.options.rotation = cell.options.rotation + 90;
-                    if (cell.options.rotation  >= 360) cell.options.rotation  = 0;
-                }
-
-                return cell
-            })
-        });
-        this.setState({grid});
-        this.playSound("step");
-    }
-
-    moveCarForward() {
-        const oldPosition = this.findCarPosition();
-        const [x, y] = oldPosition;
-        const newPosition = {
-            "right": [x, y+1],
-            "down": [x+1, y],
-            "left": [x, y-1],
-            "up": [x-1, y],
-        }[this.findCarDirection()];
-
-        const [newX, newY] = newPosition;
-
-        if (!(newX in this.state.grid) || !(newY in this.state.grid[newX])) {
-            console.log("out of bound");
-            this.playSound("wall");
-            return;
+    _handleRpc(event) {
+        switch (event.action) {
+            case "rotate":
+                this.rotateCar();
+                break;
+            case "forward":
+                this.moveCarForward();
+                break;
+            case "map":
+                this._setGrid(event.map);
+                break;
+            default:
+                break;
         }
-        if (this.state.grid[newX][newY].type === "wall") {
-            console.log("Dont break the wall");
-            this.playSound("wall");
-            return;
-        }
-
-        this.swapTiles(oldPosition, newPosition)
-    }
-
-    swapTiles(oldPosition, newPosition) {
-        const [x, y] = oldPosition;
-        const [newX, newY] = newPosition;
-
-        let oldCell = null;
-        const grid = this.state.grid.map((row, xIndex) => {
-            return row.map((cell, yIndex) => {
-                if (xIndex === newX && yIndex === newY) {
-                    return Object.assign({}, this.state.grid[x][y]);
-                }
-                else if (xIndex === x && yIndex === y) {
-                    oldCell = Object.assign({}, this.state.grid[newX][newY]);
-                    return oldCell;
-                }
-
-                return cell;
-            });
-        });
-
-        this.setState({grid});
-        this.playSound("step");
     }
 
     playSound(name) {
@@ -144,36 +94,10 @@ class Game extends React.Component {
         audio.play();
     }
 
-    findCarDirection() {
-        const [x, y] = this.findCarPosition();
-        const rotation = this.state.grid[x][y].options.rotation;
+    static cell(type, options) {
+        options = options ? options: {};
 
-        return {0: "right", 90: "down", 180: "left", 270: "up"}[rotation];
-    }
-
-    findCarPosition() {
-        let xIndex = 0;
-        return this.state.grid.reduce((acc, row) => {
-            xIndex++;
-            let yIndex = -1;
-            return row.reduce((rAcc, cell) => {
-                yIndex++
-                if (cell.type === "car") {
-                    return [xIndex, yIndex];
-                }
-                return rAcc;
-            }, acc);
-        });
-    }
-
-    static cell(type) {
-        let cell = {"type": type, "options": {}};
-
-        if (type === "car") {
-            cell.options.rotation = 0;
-        }
-
-        return cell
+        return {"type": type, "options": options};
     }
 
     render() {

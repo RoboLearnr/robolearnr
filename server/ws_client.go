@@ -2,9 +2,8 @@ package main
 
 import (
 	"time"
-
-	"fmt"
 	"golang.org/x/net/websocket"
+	"github.com/labstack/gommon/log"
 )
 
 const (
@@ -14,6 +13,7 @@ const (
 
 // Client is a middleman between the websocket connection and the hub.
 type Client struct {
+	// The connection Hub
 	hub *Hub
 
 	// The websocket connection.
@@ -26,12 +26,17 @@ type Client struct {
 func (c *Client) writePump() {
 	for {
 		select {
-		case message := <-c.send:
+		case message, ok := <-c.send:
 			c.conn.SetWriteDeadline(time.Now().Add(writeWait))
-			fmt.Println("Sending message", string(message))
+			if !ok {
+				c.conn.Close()
+				return
+			}
 			err := websocket.Message.Send(c.conn, string(message))
 			if err != nil {
-				fmt.Println(err)
+				log.Debug("Warning: Connection closed", err)
+				c.conn.Close()
+				return
 			}
 		}
 	}

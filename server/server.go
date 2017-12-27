@@ -5,7 +5,7 @@ import (
 	"github.com/labstack/echo/middleware"
 )
 
-func CreateServer(hub *Hub) *echo.Echo {
+func CreateServer(hub *Hub, mapInstance *Map) *echo.Echo {
 	e := echo.New()
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
@@ -15,9 +15,10 @@ func CreateServer(hub *Hub) *echo.Echo {
 
 	e.Use(HandleStatic())
 
-	e.GET("/api/map", HandleMap())
-	e.GET("/api/:action", HandleRpc(hub))
+	e.GET("/api/map", HandleMap(mapInstance))
+	e.GET("/api/:action", HandleRpc(hub, mapInstance))
 	e.GET("/ws", HandleWs(hub))
 
 	return e
 }
+
