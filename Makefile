@@ -3,7 +3,7 @@
 version ?= dev
 appname := robolearn
 sources := build/web
-build = docker run --rm -v $(PWD):/go/src/app -w /go/src/app/server golang:1.8 bash -c "go get -u github.com/jteeuwen/go-bindata/...; go generate; go get; GOOS=$(1) GOARCH=$(2) go build -o ../build/$(appname)$(3)"
+build = docker run --rm -v $(PWD):/go/src/app:ro -w /go/src/app/server golang:1.8 bash -c "go get -u github.com/jteeuwen/go-bindata/...; go generate; go get; GOOS=$(1) GOARCH=$(2) go build -o ../build/$(appname)$(3)"
 tar = cd build && tar -cvzf $(1)_$(2).tar.gz $(appname)$(3) && rm $(appname)$(3)
 zip = cd build && zip $(1)_$(2).zip $(appname)$(3) && rm $(appname)$(3)
 
