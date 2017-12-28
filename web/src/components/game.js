@@ -30,6 +30,8 @@ class Game extends React.Component {
                         return Game.cell("empty");
                     case "w":
                         return Game.cell("wall");
+                    case "g":
+                        return Game.cell("goal");
                     case "c":
                         return Game.cell("car", {"rotation": map.car.rotation});
                     default:
@@ -95,7 +97,7 @@ class Game extends React.Component {
     }
 
     static cell(type, options) {
-        options = options ? options: {};
+        options = options || {};
 
         return {"type": type, "options": options};
     }

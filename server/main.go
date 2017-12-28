@@ -9,5 +9,6 @@ func main() {
 	mapInstance := LoadMap(os.Args[1])
 
 	e := CreateServer(hub, mapInstance)
+
 	e.Logger.Fatal(e.Start(":9000"))
 }

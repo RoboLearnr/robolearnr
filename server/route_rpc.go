@@ -20,7 +20,7 @@ func HandleRpc(hub *Hub, mapInstance *Map) echo.HandlerFunc {
 
 		hub.broadcast <- msg
 
-		return c.JSON(http.StatusOK, nil)
+		return c.JSON(http.StatusOK, mapInstance.Info())
 	}
 }
 

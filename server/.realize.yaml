@@ -14,7 +14,7 @@ schema:
     run:
       status: true
   args:
-  - ../maps/robolearn.txt
+  - ../maps/l3.txt
   watcher:
     paths:
     - /
