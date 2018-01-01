@@ -26,6 +26,6 @@ func HandleReset(hub *Hub, mapInstance *Map) echo.HandlerFunc {
 		msg, _ := json.Marshal(Action{Action: "map", Map: mapInstance})
 		hub.broadcast <- msg
 
-		return c.JSON(http.StatusOK, mapInstance)
+		return c.JSON(http.StatusOK, mapInstance.Info())
 	}
 }
