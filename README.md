@@ -15,7 +15,8 @@ wget https://raw.githubusercontent.com/NoUseFreak/robolearn/master/maps/maze_sim
 Start the server and open http://127.0.0.1:9000
 
 ```bash
-./robolearn maze_simple.txt
+./robolearn[.exe] https://raw.githubusercontent.com/NoUseFreak/robolearn/master/maps/maze_simple.txt
+
 ```
 
 Write your program.
