@@ -5,6 +5,7 @@ import (
 	"bufio"
 	"strings"
 	"log"
+	"net/http"
 )
 
 type Map struct {
@@ -124,15 +125,10 @@ func NewMap(name string, grid [][]string) *Map {
 	return m
 }
 
-func LoadMap(filename string) *Map {
-	file, err := os.Open(filename)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
+func LoadMap(path string) *Map {
 	var grid [][]string
+
+	scanner := bufio.NewScanner(GetMapReader(path))
 	for scanner.Scan() {
 		grid = append(grid, strings.Split(scanner.Text(), ","))
 	}
@@ -141,7 +137,22 @@ func LoadMap(filename string) *Map {
 		log.Fatal(err)
 	}
 
-	mapI := NewMap(filename, grid)
+	return NewMap(path, grid)
+}
 
-	return mapI
+func GetMapReader(path string) *bufio.Reader {
+	if strings.HasPrefix(path, "http") {
+		response, err := http.Get(path)
+		if err != nil {
+			log.Fatal(err)
+		}
+		return bufio.NewReader(response.Body)
+	}
+
+	file, err := os.Open(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return bufio.NewReader(file)
 }
