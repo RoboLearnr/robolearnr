@@ -4,11 +4,16 @@ import (
 	"os"
 	"fmt"
 	"github.com/skratchdot/open-golang/open"
+	"github.com/labstack/gommon/log"
 )
 
 func main() {
 	hub := newHub()
 	go hub.run()
+
+	if len(os.Args) < 2 {
+		log.Fatal("You need to provide a map.")
+	}
 
 	mapInstance := LoadMap(os.Args[1])
 
