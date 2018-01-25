@@ -1,31 +1,31 @@
-# RoboLearn
+# RoboLearnr
 
 ## Installation
 
-Download the [latest release](https://github.com/NoUseFreak/robolearn/releases).
+Download the [latest release](https://github.com/NoUseFreak/robolearnr/releases).
 
 ## Example
 
 Download a sample map.
 
 ```bash
-wget https://raw.githubusercontent.com/NoUseFreak/robolearn/master/maps/maze_simple.txt
+wget https://raw.githubusercontent.com/NoUseFreak/robolearnr/master/maps/maze_simple.txt
 ```
 
 Start the server and open http://127.0.0.1:9000
 
 ```bash
-./robolearn[.exe] https://raw.githubusercontent.com/NoUseFreak/robolearn/master/maps/maze_simple.txt
+./robolearnr[.exe] https://raw.githubusercontent.com/NoUseFreak/robolearnr/master/maps/maze_simple.txt
 
 ```
 
 Write your program.
 
 ```python
-import robolearn
+import robolearnr
 import time
 
-rl = robolearn.Robolearn()
+rl = robolearnr.Robolearn()
 rl.reset()
 
 while not rl.on_goal():
@@ -38,7 +38,7 @@ while not rl.on_goal():
 Run your program.
 
 ```
-pip install robolearn-python
+pip install robolearnr-python
 python program.py
 ```
 

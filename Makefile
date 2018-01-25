@@ -1,20 +1,20 @@
 .PHONY: all windows darwin linux clean
 
 version ?= dev
-appname := robolearn
+appname := robolearnr
 sources := build/web
 build = docker run --rm -v $(PWD):/go/src/app:rw -w /go/src/app/server golang:1.8 bash -c "go get; go get -u github.com/jteeuwen/go-bindata/...; go generate; GOOS=$(1) GOARCH=$(2) go build -o ../build/$(appname)$(3)"
 tar = cd build && tar -cvzf $(1)_$(2).tar.gz $(appname)$(3) && rm $(appname)$(3)
 zip = cd build && zip $(1)_$(2).zip $(appname)$(3) && rm $(appname)$(3)
 
-default: build/web build/robolearn
+default: build/web build/robolearnr
 
 
 build_docker:
-	docker build . -t robolearn:${version}
+	docker build . -t robolearnr:${version}
 
 run:
-	docker run -p 8080:80 robolearn:${version}
+	docker run -p 8080:80 robolearnr:${version}
 
 dev_node:
 	cd web \
@@ -27,13 +27,13 @@ dev_go:
 dev_sdk:
 	mkdir -p sdk
 	mkdir -p sdk/python
-	cd sdk/python; git clone git@github.com:NoUseFreak/python-robolearn.git . || git fetch
+	cd sdk/python; git clone git@github.com:NoUseFreak/python-robolearnr.git . || git fetch
 
 clean:
 	rm -rf build/
 
-build/robolearn:
-	docker run --rm -v $(PWD):/go/src/app -w /go/src/app/server golang:1.8 bash -c "go get -u github.com/jteeuwen/go-bindata/...; go generate; go get; GOOS=darwin GOARCH=amd64 go build -o ../build/robolearn"
+build/robolearnr:
+	docker run --rm -v $(PWD):/go/src/app -w /go/src/app/server golang:1.8 bash -c "go get -u github.com/jteeuwen/go-bindata/...; go generate; go get; GOOS=darwin GOARCH=amd64 go build -o ../build/robolearnr"
 
 all: darwin linux windows
 
