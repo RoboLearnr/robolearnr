@@ -1,5 +1,10 @@
 # RoboLearnr
 
+RoboLearnr is simple to use tool to enable beginners to start programming.
+
+Is is a all-in-one tool written in [Go](https://golang.org/) to render maps and allow some basic instruction through
+an api. To simplify getting strarted some sdk's are provided in different languages.
+
 ## Installation
 
 Download the [latest release](https://github.com/NoUseFreak/robolearnr/releases).
@@ -39,4 +44,4 @@ python program.py
 ## Credits
 
  - Sound effects: [freeSFX](http://www.freesfx.co.uk)
-                  
+
