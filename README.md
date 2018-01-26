@@ -7,7 +7,7 @@ an api. To simplify getting strarted some sdk's are provided in different langua
 
 ## Installation
 
-Download the [latest release](https://github.com/NoUseFreak/robolearnr/releases).
+Download the [latest release](https://github.com/RoboLearnr/robolearnr/releases).
 
 ## Example
 
