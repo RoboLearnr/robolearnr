@@ -6,16 +6,10 @@ Download the [latest release](https://github.com/NoUseFreak/robolearnr/releases)
 
 ## Example
 
-Download a sample map.
-
-```bash
-wget https://raw.githubusercontent.com/NoUseFreak/robolearnr/master/maps/maze_simple.txt
-```
-
 Start the server and open http://127.0.0.1:9000
 
 ```bash
-./robolearnr[.exe] https://raw.githubusercontent.com/NoUseFreak/robolearnr/master/maps/maze_simple.txt
+./robolearnr[.exe] https://raw.githubusercontent.com/RoboLearnr/robolearnr/master/maps/robolearn.txt
 
 ```
 
