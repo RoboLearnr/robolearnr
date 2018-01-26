@@ -2,8 +2,8 @@
 
 RoboLearnr is simple to use tool to enable beginners to start programming.
 
-Is is a all-in-one tool written in [Go](https://golang.org/) to render maps and allow some basic instruction through
-an api. To simplify getting strarted some sdk's are provided in different languages.
+Is is a all-in-one tool written in [Go](https://golang.org/) to render maps and allow a car to move using some basic
+instructions through an api. To simplify getting strarted some sdk's are provided in different languages.
 
 ## Installation
 
